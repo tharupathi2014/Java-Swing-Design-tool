@@ -1,4 +1,5 @@
 package org.example.project1;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -6,10 +7,24 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginScreen {
 
+    private final Map<String, String> userDatabase;
+
+    public LoginScreen() {
+        this.userDatabase = new HashMap<>();
+        // Preload with default admin
+        userDatabase.put("admin", "admin");
+    }
+
+    public LoginScreen(Map<String, String> sharedDb) {
+        this.userDatabase = sharedDb;
+    }
+
     public void show(Stage primaryStage) {
-        // Layout
         VBox root = new VBox(20);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
@@ -24,11 +39,9 @@ public class LoginScreen {
 
         Label userLabel = new Label("Username:");
         TextField username = new TextField();
-        username.setPromptText("Enter username");
 
         Label passLabel = new Label("Password:");
         PasswordField password = new PasswordField();
-        password.setPromptText("Enter password");
 
         form.add(userLabel, 0, 0);
         form.add(username, 1, 0);
@@ -36,28 +49,35 @@ public class LoginScreen {
         form.add(password, 1, 1);
 
         Button loginBtn = new Button("Login");
+        Button signUpBtn = new Button("Sign Up");
+
         Label message = new Label();
         message.setStyle("-fx-text-fill: red;");
 
-        // Login Logic
         loginBtn.setOnAction(e -> {
             String user = username.getText().trim();
             String pass = password.getText().trim();
 
-            if (user.equals("admin") && pass.equals("admin")) {
-                // Proceed to 3D designer
+            if (userDatabase.containsKey(user) && userDatabase.get(user).equals(pass)) {
                 RoomDesigner3D designer = new RoomDesigner3D();
                 designer.start(primaryStage);
             } else {
-                message.setText("Invalid credentials. Try 'admin' / 'admin'.");
+                message.setText("Invalid credentials.");
             }
         });
 
-        root.getChildren().addAll(title, form, loginBtn, message);
+        signUpBtn.setOnAction(e -> {
+            SignUpScreen signUpScreen = new SignUpScreen(userDatabase);
+            signUpScreen.show(primaryStage);
+        });
 
-        Scene scene = new Scene(root, 400, 300);
+        HBox buttons = new HBox(10, loginBtn, signUpBtn);
+        buttons.setAlignment(Pos.CENTER);
+
+        root.getChildren().addAll(title, form, buttons, message);
+
+        primaryStage.setScene(new Scene(root, 400, 300));
         primaryStage.setTitle("Login");
-        primaryStage.setScene(scene);
         primaryStage.show();
     }
 }

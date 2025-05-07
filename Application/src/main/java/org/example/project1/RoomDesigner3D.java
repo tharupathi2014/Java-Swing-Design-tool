@@ -1,8 +1,8 @@
 package org.example.project1;
-import javafx.application.Application;import javafx.geometry.Point3D;
+import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -12,6 +12,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import javafx.scene.shape.MeshView;
+import javafx.scene.image.Image;
 
 public class RoomDesigner3D extends Application {
 
@@ -63,11 +64,41 @@ public class RoomDesigner3D extends Application {
             }
         });
 
-        // UI buttons
-        Button addTable = new Button("Add Table");
-        Button addChair1 = new Button("Add Couch");
-        Button addChair2 = new Button("Add Modern Desk");
-        Button addChair3 = new Button("Add Classic Desk");
+        // Load images from classpath
+        Image tableImg = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/office_chair.png");
+        Image couchImg = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/armchair.jpg");
+        Image bedImg = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/bed.jpg");
+        Image table2Img = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/table.jpg");
+
+        // Create image views and scale if needed
+        ImageView tableView = new ImageView(tableImg);
+        tableView.setFitWidth(40);
+        tableView.setFitHeight(40);
+
+        ImageView couchView = new ImageView(couchImg);
+        couchView.setFitWidth(40);
+        couchView.setFitHeight(40);
+
+        ImageView bedView = new ImageView(bedImg);
+        bedView.setFitWidth(40);
+        bedView.setFitHeight(40);
+
+        ImageView table2View = new ImageView(table2Img);
+        table2View.setFitWidth(40);
+        table2View.setFitHeight(40);
+
+        // Create buttons with images
+        Button addTable = new Button();
+        addTable.setGraphic(tableView);
+
+        Button addChair1 = new Button();
+        addChair1.setGraphic(couchView);
+
+        Button addChair2 = new Button();
+        addChair2.setGraphic(bedView);    // CORRECT
+
+        Button addChair3 = new Button();
+        addChair3.setGraphic(table2View);
 
         addChair1.setOnAction(e -> addFurniture("chair1"));
         addTable.setOnAction(e -> addFurniture("table"));
@@ -197,11 +228,11 @@ public class RoomDesigner3D extends Application {
                     model.setMaterial(new PhongMaterial(Color.DARKRED));
                 }
                 case "chair2" -> {
-                    model = ObjModelLoader.load("C:/Users/USER/Desktop/project1/src/main/resources/assets/table2/Textures/ModernDeskOBJ.obj");
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/Bed/Full_Size_Bed_with_White_Sheets_Black_V1.obj");
                     model.setMaterial(new PhongMaterial(Color.DARKBLUE));
                 }
                 case "chair3" -> {
-                    model = ObjModelLoader.load("C:/Users/USER/Desktop/project1/src/main/resources/assets/table3/desk.obj");
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/Tabel/table.obj");
                     model.setMaterial(new PhongMaterial(Color.DARKGREEN));
                 }
                 default -> {
