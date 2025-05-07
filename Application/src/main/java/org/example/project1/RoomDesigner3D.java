@@ -69,7 +69,7 @@ public class RoomDesigner3D extends Application {
         Button addChair2 = new Button("Add Modern Desk");
         Button addChair3 = new Button("Add Classic Desk");
 
-        addChair1.setOnAction(e -> addFurniture("chair"));
+        addChair1.setOnAction(e -> addFurniture("chair1"));
         addTable.setOnAction(e -> addFurniture("table"));
         addChair2.setOnAction(e -> addFurniture("chair2"));
         addChair3.setOnAction(e -> addFurniture("chair3"));
@@ -107,10 +107,27 @@ public class RoomDesigner3D extends Application {
             }
         });
 
+        scene.setOnKeyPressed(event -> {
+            if (selectedNode != null) {
+                switch (event.getCode()) {
+                    case R -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Y_AXIS));
+                    case X -> selectedNode.getTransforms().add(new Rotate(15, Rotate.X_AXIS));
+                    case Z -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Z_AXIS));
+                    case EQUALS, ADD -> scaleNode(selectedNode, 1.1); // scale up
+                    case MINUS, SUBTRACT -> scaleNode(selectedNode, 0.9); // scale down
+                }
+            }
+        });
 
         stage.setTitle("3D Furniture Room Designer");
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void scaleNode(Node node, double scaleFactor) {
+        node.setScaleX(node.getScaleX() * scaleFactor);
+        node.setScaleY(node.getScaleY() * scaleFactor);
+        node.setScaleZ(node.getScaleZ() * scaleFactor);
     }
 
     private Box createBox(double w, double h, double d, Color color, double x, double y, double z) {
@@ -172,11 +189,11 @@ public class RoomDesigner3D extends Application {
 
             switch (type) {
                 case "table" -> {
-                    model = ObjModelLoader.load("C:/Users/USER/Desktop/project1/src/main/resources/assets/table/table.obj");
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/table/table.obj");
                     model.setMaterial(new PhongMaterial(Color.BEIGE));
                 }
                 case "chair1" -> {
-                    model = ObjModelLoader.load("C:/Users/USER/Desktop/project1/src/main/resources/assets/chair/couch.obj");
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/69-chairss-obj/chairss.obj");
                     model.setMaterial(new PhongMaterial(Color.DARKRED));
                 }
                 case "chair2" -> {
@@ -193,17 +210,13 @@ public class RoomDesigner3D extends Application {
                 }
             }
 
-            // Position and scale
+            // Randomized position on each call
             model.setScaleX(10);
             model.setScaleY(10);
             model.setScaleZ(10);
-            model.setTranslateX(0);
+            model.setTranslateX(Math.random() * 400 - 200); // Wider range
             model.setTranslateY(180);
-            model.setTranslateZ(0);
-
-            model.setTranslateX(Math.random() * 200 - 100);  // Random between -100 and +100
-            model.setTranslateY(180);
-            model.setTranslateZ(Math.random() * 200 - 100);
+            model.setTranslateZ(Math.random() * 400 - 200);
 
             enableFurnitureControls(model);
             world.getChildren().add(model);
