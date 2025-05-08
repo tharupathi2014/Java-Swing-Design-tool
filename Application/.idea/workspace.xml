@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e1f10ed0-8e9c-4e6d-b5ac-6f077e43001e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/project1/RoomDesigner2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/project1/RoomDesigner3D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/project1/RoomDesigner3D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/images/obj7.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/images/obj7.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/images/table.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/images/table.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/images/tv_stand.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/images/tv_stand.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/images/wood_table.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/images/wood_table.jpg" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2woKF1DcvF2R39NHY79wCUlEJfd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "Application.RoomDesigner2D.executor": "Run",
+    "Application.RoomDesigner3D.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/target/classes/images",
+    "settings.editor.selected.configurable": "com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\USER\Desktop\New folder\Java-Swing-Design-tool\Application\target\classes\images" />
+    </key>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e1f10ed0-8e9c-4e6d-b5ac-6f077e43001e" name="Changes" comment="" />
+      <created>1746702380672</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746702380672</updated>
+    </task>
+    <servers />
+  </component>
+</project>

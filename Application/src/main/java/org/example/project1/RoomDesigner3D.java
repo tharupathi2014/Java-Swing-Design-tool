@@ -15,7 +15,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import javafx.scene.control.ChoiceDialog;
-import javafx.util.StringConverter;
 
 import javafx.scene.shape.MeshView;
 import javafx.scene.image.Image;
@@ -35,6 +34,9 @@ public class RoomDesigner3D extends Application {
     private Color roomColor = Color.BEIGE;
 
     private String currentUser = "guest";
+
+    private final Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
+    private final Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
 
     public void setCurrentUser(String username) {
         this.currentUser = username;
@@ -84,6 +86,9 @@ public class RoomDesigner3D extends Application {
         HBox leftButtons = new HBox(10, buttons);
         leftButtons.setAlignment(Pos.CENTER_LEFT);
 
+        ToggleButton viewToggleBtn = new ToggleButton("🖼 2D View");
+        viewToggleBtn.setStyle("-fx-font-size: 14px;");
+
         // Save and Load buttons
         Button saveBtn = new Button("💾 Save");
         saveBtn.setStyle("-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
@@ -109,7 +114,7 @@ public class RoomDesigner3D extends Application {
         spacer.setMinWidth(Region.USE_COMPUTED_SIZE);
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox topBar = new HBox(15, leftButtons, spacer, loadBtn, saveBtn, colorPicker);
+        HBox topBar = new HBox(15, leftButtons, spacer, loadBtn, saveBtn, colorPicker, viewToggleBtn);
         topBar.setPadding(new Insets(10));
         topBar.setStyle("-fx-background-color: lightgray;");
 
@@ -143,6 +148,21 @@ public class RoomDesigner3D extends Application {
                 anchorX = e.getSceneX();
                 anchorY = e.getSceneY();
             }
+        });
+
+        viewToggleBtn.setOnAction(e -> {
+            if (viewToggleBtn.isSelected()) {
+                angleX = 90;
+                angleY = 0;
+                camera.setTranslateZ(-800);
+            } else {
+                angleX = 0;
+                angleY = 0;
+                camera.setTranslateZ(-1000);
+            }
+
+            rotateX.setAngle(angleX);
+            rotateY.setAngle(angleY);
         });
 
         // Final layout
