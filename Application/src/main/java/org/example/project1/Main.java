@@ -3,19 +3,19 @@ package org.example.project1;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Main extends Application {
 
-    private final Map<String, String> userDatabase = new HashMap<>();
-
     @Override
     public void start(Stage primaryStage) {
-        // Preload admin credentials
-        userDatabase.put("admin", "admin");
+        // Load users from file (including "admin" if already saved)
+        Map<String, String> userDatabase = UserStorage.loadUsers();
 
-        // Pass shared DB to Login screen
+        // Optionally preload admin if not present
+        userDatabase.putIfAbsent("admin", "admin");
+
+        // Show login screen with loaded users
         new LoginScreen(userDatabase).show(primaryStage);
     }
 

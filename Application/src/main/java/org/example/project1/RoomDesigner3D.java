@@ -1,18 +1,29 @@
 package org.example.project1;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
+import javafx.scene.control.ChoiceDialog;
+import javafx.util.StringConverter;
+
 import javafx.scene.shape.MeshView;
 import javafx.scene.image.Image;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import javafx.scene.paint.Color;
 
 public class RoomDesigner3D extends Application {
 
@@ -21,6 +32,23 @@ public class RoomDesigner3D extends Application {
     private double angleY = 0;
     private Group world = new Group();
     private Node selectedNode = null;
+    private Color roomColor = Color.BEIGE;
+
+    private String currentUser = "guest";
+
+    public void setCurrentUser(String username) {
+        this.currentUser = username;
+    }
+
+    public void saveCurrentDesign() {
+        TextInputDialog dialog = new TextInputDialog("my_design");
+        dialog.setTitle("Save Design");
+        dialog.setHeaderText("Enter a name for your design:");
+
+        dialog.showAndWait().ifPresent(name -> {
+            DesignStorage.saveDesign(currentUser, name, world.getChildren(), roomColor, angleX, angleY);
+        });
+    }
 
     @Override
     public void start(Stage stage) {
@@ -28,17 +56,71 @@ public class RoomDesigner3D extends Application {
         Box floor = createBox(600, 5, 600, Color.LIGHTGRAY, 0, 200, 0);
         Box wallBack = createBox(600, 400, 5, Color.BEIGE, 0, 0, 300);
         Box wallLeft = createBox(5, 400, 600, Color.BEIGE, -300, 0, 0);
-
         world.getChildren().addAll(floor, wallBack, wallLeft);
 
-        // Add camera
+        // Load images
+        Image[] images = {
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/office_chair.png"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/armchair.jpg"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/table.jpg"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/table_with_chairs.jpg"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/tv_stand.jpg"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/table.jpg"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/obj7.png"),
+                new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/wood_table.jpg")
+        };
+
+        Button[] buttons = new Button[8];
+        for (int i = 0; i < 8; i++) {
+            ImageView view = new ImageView(images[i]);
+            view.setFitWidth(40);
+            view.setFitHeight(40);
+            buttons[i] = new Button();
+            buttons[i].setGraphic(view);
+            int index = i + 1;
+            buttons[i].setOnAction(e -> addFurniture("object" + index));
+        }
+
+        HBox leftButtons = new HBox(10, buttons);
+        leftButtons.setAlignment(Pos.CENTER_LEFT);
+
+        // Save and Load buttons
+        Button saveBtn = new Button("💾 Save");
+        saveBtn.setStyle("-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+        saveBtn.setOnAction(e -> saveCurrentDesign());
+
+        Button loadBtn = new Button("📂 Open Design");
+        loadBtn.setStyle("-fx-font-size: 14px;");
+        loadBtn.setOnAction(e -> loadCurrentDesign());
+
+        // Color Picker
+        ColorPicker colorPicker = new ColorPicker(Color.BEIGE);
+        colorPicker.setTooltip(new Tooltip("Change Room Color"));
+        colorPicker.setOnAction(e -> {
+            roomColor = colorPicker.getValue();
+            Color selected = colorPicker.getValue();
+            floor.setMaterial(new PhongMaterial(selected));
+            wallBack.setMaterial(new PhongMaterial(selected));
+            wallLeft.setMaterial(new PhongMaterial(selected));
+        });
+
+        // Top bar layout
+        HBox spacer = new HBox();
+        spacer.setMinWidth(Region.USE_COMPUTED_SIZE);
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox topBar = new HBox(15, leftButtons, spacer, loadBtn, saveBtn, colorPicker);
+        topBar.setPadding(new Insets(10));
+        topBar.setStyle("-fx-background-color: lightgray;");
+
+        // Camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setTranslateZ(-1000);
         camera.setNearClip(0.1);
         camera.setFarClip(5000);
         camera.setFieldOfView(35);
 
-        // Enable world rotation
+        // Rotation
         Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
         Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
         world.getTransforms().addAll(rotateX, rotateY);
@@ -47,14 +129,13 @@ public class RoomDesigner3D extends Application {
         subScene.setFill(Color.SKYBLUE);
         subScene.setCamera(camera);
 
-        // Mouse drag to rotate the room
         subScene.setOnMousePressed(e -> {
             anchorX = e.getSceneX();
             anchorY = e.getSceneY();
         });
 
         subScene.setOnMouseDragged(e -> {
-            if (e.isSecondaryButtonDown()) { // right-click only
+            if (e.isSecondaryButtonDown()) {
                 angleY += (e.getSceneX() - anchorX) * 0.3;
                 angleX -= (e.getSceneY() - anchorY) * 0.3;
                 rotateY.setAngle(angleY);
@@ -64,52 +145,9 @@ public class RoomDesigner3D extends Application {
             }
         });
 
-        // Load images from classpath
-        Image tableImg = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/office_chair.png");
-        Image couchImg = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/armchair.jpg");
-        Image bedImg = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/bed.jpg");
-        Image table2Img = new Image("file:/C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/images/table.jpg");
-
-        // Create image views and scale if needed
-        ImageView tableView = new ImageView(tableImg);
-        tableView.setFitWidth(40);
-        tableView.setFitHeight(40);
-
-        ImageView couchView = new ImageView(couchImg);
-        couchView.setFitWidth(40);
-        couchView.setFitHeight(40);
-
-        ImageView bedView = new ImageView(bedImg);
-        bedView.setFitWidth(40);
-        bedView.setFitHeight(40);
-
-        ImageView table2View = new ImageView(table2Img);
-        table2View.setFitWidth(40);
-        table2View.setFitHeight(40);
-
-        // Create buttons with images
-        Button addTable = new Button();
-        addTable.setGraphic(tableView);
-
-        Button addChair1 = new Button();
-        addChair1.setGraphic(couchView);
-
-        Button addChair2 = new Button();
-        addChair2.setGraphic(bedView);    // CORRECT
-
-        Button addChair3 = new Button();
-        addChair3.setGraphic(table2View);
-
-        addChair1.setOnAction(e -> addFurniture("chair1"));
-        addTable.setOnAction(e -> addFurniture("table"));
-        addChair2.setOnAction(e -> addFurniture("chair2"));
-        addChair3.setOnAction(e -> addFurniture("chair3"));
-
-        HBox controls = new HBox(10, addTable, addChair1, addChair2, addChair3);
-        controls.setStyle("-fx-padding: 10; -fx-background-color: lightgray;");
-
+        // Final layout
         BorderPane root = new BorderPane();
-        root.setTop(controls);
+        root.setTop(topBar);
         root.setCenter(subScene);
 
         Scene scene = new Scene(root, 900, 650, true);
@@ -117,9 +155,11 @@ public class RoomDesigner3D extends Application {
         scene.setOnKeyPressed(event -> {
             if (selectedNode != null) {
                 switch (event.getCode()) {
-                    case R -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Y_AXIS)); // rotate left/right
-                    case X -> selectedNode.getTransforms().add(new Rotate(15, Rotate.X_AXIS)); // tilt forward/back
-                    case Z -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Z_AXIS)); // tilt sideways
+                    case R -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Y_AXIS));
+                    case X -> selectedNode.getTransforms().add(new Rotate(15, Rotate.X_AXIS));
+                    case Z -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Z_AXIS));
+                    case EQUALS, ADD -> scaleNode(selectedNode, 1.1);
+                    case MINUS, SUBTRACT -> scaleNode(selectedNode, 0.9);
                 }
             }
         });
@@ -127,27 +167,7 @@ public class RoomDesigner3D extends Application {
         scene.setOnScroll(e -> {
             double zoomFactor = 20;
             double delta = e.getDeltaY();
-
-            // Zoom in (scroll up) = move camera closer (more negative Z)
-            if (delta > 0) {
-                camera.setTranslateZ(camera.getTranslateZ() + zoomFactor);
-            }
-            // Zoom out (scroll down) = move camera back (less negative Z)
-            else {
-                camera.setTranslateZ(camera.getTranslateZ() - zoomFactor);
-            }
-        });
-
-        scene.setOnKeyPressed(event -> {
-            if (selectedNode != null) {
-                switch (event.getCode()) {
-                    case R -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Y_AXIS));
-                    case X -> selectedNode.getTransforms().add(new Rotate(15, Rotate.X_AXIS));
-                    case Z -> selectedNode.getTransforms().add(new Rotate(15, Rotate.Z_AXIS));
-                    case EQUALS, ADD -> scaleNode(selectedNode, 1.1); // scale up
-                    case MINUS, SUBTRACT -> scaleNode(selectedNode, 0.9); // scale down
-                }
-            }
+            camera.setTranslateZ(camera.getTranslateZ() + (delta > 0 ? zoomFactor : -zoomFactor));
         });
 
         stage.setTitle("3D Furniture Room Designer");
@@ -155,11 +175,71 @@ public class RoomDesigner3D extends Application {
         stage.show();
     }
 
+    public void loadCurrentDesign() {
+        File userDir = new File("saved_designs", currentUser);
+        if (!userDir.exists() || !userDir.isDirectory()) {
+            System.out.println("No saved designs found for user: " + currentUser);
+            return;
+        }
+
+        File[] designFiles = userDir.listFiles((dir, name) -> name.endsWith(".design"));
+        if (designFiles == null || designFiles.length == 0) {
+            System.out.println("No design files to load.");
+            return;
+        }
+
+        // Create a list of design names (without extensions)
+        List<String> designNames = Arrays.stream(designFiles)
+                .map(file -> file.getName().replace(".design", ""))
+                .toList();
+
+        // Show dialog with just design names
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(designNames.get(0), designNames);
+        dialog.setTitle("Load Design");
+        dialog.setHeaderText("Select a saved design to load:");
+        dialog.setContentText("Designs:");
+
+        dialog.showAndWait().ifPresent(designName -> {
+            File selectedFile = new File(userDir, designName + ".design");
+            DesignStorage.loadDesignFile(selectedFile, this);
+        });
+    }
+
     private void scaleNode(Node node, double scaleFactor) {
         node.setScaleX(node.getScaleX() * scaleFactor);
         node.setScaleY(node.getScaleY() * scaleFactor);
         node.setScaleZ(node.getScaleZ() * scaleFactor);
     }
+
+    public MeshView loadFurnitureModel(String type) {
+        System.out.println("Attempting to load model: " + type);
+        try {
+            MeshView model = null;
+            switch (type) {
+                case "object1" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/table/table.obj");
+                case "object2" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/69-chairss-obj/chairss.obj");
+                case "object3" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object1/10222_Coffee_Table_v1_max2010vb.obj");
+                case "object4" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object2/Table And Chairs.obj");
+                case "object5" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object8/furniture_xena.obj");
+                case "object6" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object4/table3.obj");
+                case "object7" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/89-obj/the chair modeling.obj");
+                case "object8" -> model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object7/Wood_Table.obj");
+            }
+            if (model == null) {
+                System.out.println("Model load failed for type: " + type);
+            }
+            return model;
+        } catch (Exception e) {
+            System.err.println("Error loading model for " + type + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    public void addToScene(Node node) {
+        enableFurnitureControls(node);
+        world.getChildren().add(node);
+    }
+
 
     private Box createBox(double w, double h, double d, Color color, double x, double y, double z) {
         Box box = new Box(w, h, d);
@@ -219,20 +299,36 @@ public class RoomDesigner3D extends Application {
             MeshView model = null;
 
             switch (type) {
-                case "table" -> {
+                case "object1" -> {
                     model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/table/table.obj");
                     model.setMaterial(new PhongMaterial(Color.BEIGE));
                 }
-                case "chair1" -> {
+                case "object2" -> {
                     model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/69-chairss-obj/chairss.obj");
                     model.setMaterial(new PhongMaterial(Color.DARKRED));
                 }
-                case "chair2" -> {
-                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/Bed/Full_Size_Bed_with_White_Sheets_Black_V1.obj");
+                case "object3" -> {
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object1/10222_Coffee_Table_v1_max2010vb.obj");
                     model.setMaterial(new PhongMaterial(Color.DARKBLUE));
                 }
-                case "chair3" -> {
-                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/Tabel/table.obj");
+                case "object4" -> {
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object2/Table And Chairs.obj");
+                    model.setMaterial(new PhongMaterial(Color.DARKGREEN));
+                }
+                case "object5" -> {
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object8/furniture_xena.obj");
+                    model.setMaterial(new PhongMaterial(Color.DARKGREEN));
+                }
+                case "object6" -> {
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object4/table3.obj");
+                    model.setMaterial(new PhongMaterial(Color.DARKGREEN));
+                }
+                case "object7" -> {
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/89-obj/the chair modeling.obj");
+                    model.setMaterial(new PhongMaterial(Color.BEIGE));
+                }
+                case "object8" -> {
+                    model = ObjModelLoader.load("C:/Users/USER/Desktop/New folder/Java-Swing-Design-tool/Application/src/main/resources/assets/object7/Wood_Table.obj");
                     model.setMaterial(new PhongMaterial(Color.DARKGREEN));
                 }
                 default -> {
@@ -249,6 +345,7 @@ public class RoomDesigner3D extends Application {
             model.setTranslateY(180);
             model.setTranslateZ(Math.random() * 400 - 200);
 
+            model.setUserData(type);
             enableFurnitureControls(model);
             world.getChildren().add(model);
 
